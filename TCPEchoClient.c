@@ -47,6 +47,8 @@ int main(int argc, char *argv[])
     echoServAddr.sin_family      = AF_INET;             /* Internet address family */
     echoServAddr.sin_addr.s_addr = inet_addr(servIP);   /* Server IP address */
     echoServAddr.sin_port        = htons(echoServPort); /* Server port */
+// Book line 38
+
 
    /* If user gave a dotted decimal address, we need to resolve it  */
     if (echoServAddr.sin_addr.s_addr == -1) {

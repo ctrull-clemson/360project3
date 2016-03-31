@@ -54,8 +54,6 @@ int main(int argc, char *argv[])
             echoServAddr.sin_addr.s_addr = *((unsigned long *) thehost->h_addr_list[0]);
     }
 
-
-
     /* Establish the connection to the echo server */
     if (connect(sock, (struct sockaddr *) &echoServAddr, sizeof(echoServAddr)) < 0)
         DieWithError("connect() failed");
