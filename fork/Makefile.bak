@@ -1,0 +1,193 @@
+include Make.defines
+
+PROGS =	 TCPserver
+
+OPTIONS = -DUNIX  -DUSE_SIGACTION -DANSI
+
+
+COBJECTS =	DieWithError.o HandleTCPClient.o AcceptTCPConnection.o CreateTCPServerSocket.o
+CSOURCES =	DieWithError.c HandleTCPClient.c AcceptTCPConnection.c CreateTCPServerSocket.c
+
+CPLUSOBJECTS = 
+
+COMMONSOURCES =
+
+CPLUSSOURCES =
+
+all:	${PROGS}
+
+
+
+TCPserver:	TCPEchoServer-Fork-SIGCHLD.o $(CPLUSOBJECTS) $(COBJECTS)
+		${CC} $(INCLUDES) ${LINKOPTIONS} $@ TCPEchoServer-Fork-SIGCHLD.o $(CPLUSOBJECTS) $(COBJECTS) $(LIBS) $(LINKFLAGS)
+
+
+.cc.o:	$(HEADERS)
+	$(CPLUS) $(CPLUSFLAGS) $(OPTIONS) $<
+
+.c.o:	$(HEADERS)
+	$(CC) $(CFLAGS) $(OPTIONS) $<
+
+
+
+backup:
+	rm -f tcpecho.tar.gz
+	rm -f tcpecho.tar
+	tar -cf tcpecho.tar *
+	gzip -f tcpecho.tar
+
+clean:
+		rm -f ${PROGS} ${CLEANFILES}
+
+depend:
+		makedepend TCPEchoServer-Fork-SIGCHLD.c  $(INCLUDES) $(CFLAGS) $(HEADERS) $(SOURCES) $(COMMONSOURCES) $(CSOURCES)
+#		mkdep $(CFLAGS) $(HEADERS) $(SOURCES) $(COMMONSOURCES) $(CSOURCES)
+
+# DO NOT DELETE
+
+TCPEchoServer-Fork-SIGCHLD.o: TCPEchoServer.h /usr/include/stdio.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/features.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/sys/cdefs.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/bits/wordsize.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/gnu/stubs.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/gnu/stubs-32.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/linux/stddef.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/bits/types.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/bits/typesizes.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/libio.h /usr/include/_G_config.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/wchar.h /usr/include/bits/wchar.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/gconv.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/bits/stdio_lim.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/bits/sys_errlist.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/sys/socket.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/sys/uio.h /usr/include/sys/types.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/linux/time.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/linux/types.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/linux/posix_types.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/linux/stddef.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/asm/posix_types.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/asm/types.h /usr/include/endian.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/bits/endian.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/sys/select.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/bits/select.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/bits/sigset.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/bits/time.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/sys/sysmacros.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/bits/pthreadtypes.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/bits/uio.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/bits/socket.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/linux/limits.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/bits/sockaddr.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/asm/socket.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/asm/sockios.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/arpa/inet.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/netinet/in.h /usr/include/stdint.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/bits/in.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/bits/byteswap.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/stdlib.h /usr/include/alloca.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/string.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/linux/unistd.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/asm/unistd.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/sys/wait.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/linux/signal.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/asm/signal.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/linux/time.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/asm-generic/signal.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/asm/siginfo.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/asm-generic/siginfo.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/sys/resource.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/bits/resource.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/bits/waitflags.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/bits/waitstatus.h
+TCPEchoServer-Fork-SIGCHLD.o: /usr/include/bits/siginfo.h
+DieWithError.o: /usr/include/stdio.h /usr/include/features.h
+DieWithError.o: /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h
+DieWithError.o: /usr/include/gnu/stubs.h /usr/include/gnu/stubs-32.h
+DieWithError.o: /usr/include/linux/stddef.h /usr/include/bits/types.h
+DieWithError.o: /usr/include/bits/typesizes.h /usr/include/libio.h
+DieWithError.o: /usr/include/_G_config.h /usr/include/wchar.h
+DieWithError.o: /usr/include/bits/wchar.h /usr/include/gconv.h
+DieWithError.o: /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h
+DieWithError.o: /usr/include/stdlib.h /usr/include/sys/types.h
+DieWithError.o: /usr/include/linux/time.h /usr/include/linux/types.h
+DieWithError.o: /usr/include/linux/posix_types.h /usr/include/linux/stddef.h
+DieWithError.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+DieWithError.o: /usr/include/endian.h /usr/include/bits/endian.h
+DieWithError.o: /usr/include/sys/select.h /usr/include/bits/select.h
+DieWithError.o: /usr/include/bits/sigset.h /usr/include/bits/time.h
+DieWithError.o: /usr/include/sys/sysmacros.h /usr/include/bits/pthreadtypes.h
+DieWithError.o: /usr/include/alloca.h
+HandleTCPClient.o: /usr/include/stdio.h /usr/include/features.h
+HandleTCPClient.o: /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h
+HandleTCPClient.o: /usr/include/gnu/stubs.h /usr/include/gnu/stubs-32.h
+HandleTCPClient.o: /usr/include/linux/stddef.h /usr/include/bits/types.h
+HandleTCPClient.o: /usr/include/bits/typesizes.h /usr/include/libio.h
+HandleTCPClient.o: /usr/include/_G_config.h /usr/include/wchar.h
+HandleTCPClient.o: /usr/include/bits/wchar.h /usr/include/gconv.h
+HandleTCPClient.o: /usr/include/bits/stdio_lim.h
+HandleTCPClient.o: /usr/include/bits/sys_errlist.h /usr/include/sys/socket.h
+HandleTCPClient.o: /usr/include/sys/uio.h /usr/include/sys/types.h
+HandleTCPClient.o: /usr/include/linux/time.h /usr/include/linux/types.h
+HandleTCPClient.o: /usr/include/linux/posix_types.h
+HandleTCPClient.o: /usr/include/linux/stddef.h /usr/include/asm/posix_types.h
+HandleTCPClient.o: /usr/include/asm/types.h /usr/include/endian.h
+HandleTCPClient.o: /usr/include/bits/endian.h /usr/include/sys/select.h
+HandleTCPClient.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+HandleTCPClient.o: /usr/include/bits/time.h /usr/include/sys/sysmacros.h
+HandleTCPClient.o: /usr/include/bits/pthreadtypes.h /usr/include/bits/uio.h
+HandleTCPClient.o: /usr/include/bits/socket.h /usr/include/linux/limits.h
+HandleTCPClient.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
+HandleTCPClient.o: /usr/include/asm/sockios.h /usr/include/linux/unistd.h
+HandleTCPClient.o: /usr/include/asm/unistd.h
+AcceptTCPConnection.o: /usr/include/stdio.h /usr/include/features.h
+AcceptTCPConnection.o: /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h
+AcceptTCPConnection.o: /usr/include/gnu/stubs.h /usr/include/gnu/stubs-32.h
+AcceptTCPConnection.o: /usr/include/linux/stddef.h /usr/include/bits/types.h
+AcceptTCPConnection.o: /usr/include/bits/typesizes.h /usr/include/libio.h
+AcceptTCPConnection.o: /usr/include/_G_config.h /usr/include/wchar.h
+AcceptTCPConnection.o: /usr/include/bits/wchar.h /usr/include/gconv.h
+AcceptTCPConnection.o: /usr/include/bits/stdio_lim.h
+AcceptTCPConnection.o: /usr/include/bits/sys_errlist.h
+AcceptTCPConnection.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
+AcceptTCPConnection.o: /usr/include/sys/types.h /usr/include/linux/time.h
+AcceptTCPConnection.o: /usr/include/linux/types.h
+AcceptTCPConnection.o: /usr/include/linux/posix_types.h
+AcceptTCPConnection.o: /usr/include/linux/stddef.h
+AcceptTCPConnection.o: /usr/include/asm/posix_types.h
+AcceptTCPConnection.o: /usr/include/asm/types.h /usr/include/endian.h
+AcceptTCPConnection.o: /usr/include/bits/endian.h /usr/include/sys/select.h
+AcceptTCPConnection.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+AcceptTCPConnection.o: /usr/include/bits/time.h /usr/include/sys/sysmacros.h
+AcceptTCPConnection.o: /usr/include/bits/pthreadtypes.h
+AcceptTCPConnection.o: /usr/include/bits/uio.h /usr/include/bits/socket.h
+AcceptTCPConnection.o: /usr/include/linux/limits.h
+AcceptTCPConnection.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
+AcceptTCPConnection.o: /usr/include/asm/sockios.h /usr/include/arpa/inet.h
+AcceptTCPConnection.o: /usr/include/netinet/in.h /usr/include/stdint.h
+AcceptTCPConnection.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
+CreateTCPServerSocket.o: /usr/include/sys/socket.h /usr/include/features.h
+CreateTCPServerSocket.o: /usr/include/sys/cdefs.h
+CreateTCPServerSocket.o: /usr/include/bits/wordsize.h
+CreateTCPServerSocket.o: /usr/include/gnu/stubs.h /usr/include/gnu/stubs-32.h
+CreateTCPServerSocket.o: /usr/include/sys/uio.h /usr/include/sys/types.h
+CreateTCPServerSocket.o: /usr/include/bits/types.h
+CreateTCPServerSocket.o: /usr/include/linux/stddef.h
+CreateTCPServerSocket.o: /usr/include/bits/typesizes.h
+CreateTCPServerSocket.o: /usr/include/linux/time.h /usr/include/linux/types.h
+CreateTCPServerSocket.o: /usr/include/linux/posix_types.h
+CreateTCPServerSocket.o: /usr/include/linux/stddef.h
+CreateTCPServerSocket.o: /usr/include/asm/posix_types.h
+CreateTCPServerSocket.o: /usr/include/asm/types.h /usr/include/endian.h
+CreateTCPServerSocket.o: /usr/include/bits/endian.h /usr/include/sys/select.h
+CreateTCPServerSocket.o: /usr/include/bits/select.h
+CreateTCPServerSocket.o: /usr/include/bits/sigset.h /usr/include/bits/time.h
+CreateTCPServerSocket.o: /usr/include/sys/sysmacros.h
+CreateTCPServerSocket.o: /usr/include/bits/pthreadtypes.h
+CreateTCPServerSocket.o: /usr/include/bits/uio.h /usr/include/bits/socket.h
+CreateTCPServerSocket.o: /usr/include/linux/limits.h
+CreateTCPServerSocket.o: /usr/include/bits/sockaddr.h
+CreateTCPServerSocket.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+CreateTCPServerSocket.o: /usr/include/arpa/inet.h /usr/include/netinet/in.h
+CreateTCPServerSocket.o: /usr/include/stdint.h /usr/include/bits/wchar.h
+CreateTCPServerSocket.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
+CreateTCPServerSocket.o: /usr/include/string.h
