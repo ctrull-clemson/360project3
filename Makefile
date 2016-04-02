@@ -1,6 +1,6 @@
 include Make.defines
 
-PROGS =	 TCPclient TCPserver
+PROGS =	 simget simhttp
 
 OPTIONS = -DUNIX  -DUSE_SIGACTION -DANSI
 
@@ -17,11 +17,11 @@ CPLUSSOURCES =
 all:	${PROGS}
 
 
-TCPclient:	TCPEchoClient.o $(CPLUSOBJECTS) $(COBJECTS) $(LIBS) $(COMMONSOURCES) $(SOURCES)
+simget:	TCPEchoClient.o $(CPLUSOBJECTS) $(COBJECTS) $(LIBS) $(COMMONSOURCES) $(SOURCES)
 		${CC} $(INCLUDES) ${LINKOPTIONS}  $@ TCPEchoClient.o $(CPLUSOBJECTS) $(COBJECTS) $(LIBS) $(LINKFLAGS)
 
 
-TCPserver:	TCPEchoServer.o $(CPLUSOBJECTS) $(COBJECTS)
+simhttp:	TCPEchoServer.o $(CPLUSOBJECTS) $(COBJECTS)
 		${CC} $(INCLUDES) ${LINKOPTIONS} $@ TCPEchoServer.o $(CPLUSOBJECTS) $(COBJECTS) $(LIBS) $(LINKFLAGS)
 
 
@@ -34,10 +34,10 @@ TCPserver:	TCPEchoServer.o $(CPLUSOBJECTS) $(COBJECTS)
 
 
 backup:
-	rm -f tcpecho.tar.gz
-	rm -f tcpecho.tar
-	tar -cf tcpecho.tar *
-	gzip -f tcpecho.tar
+	rm -f ctrull-hw3.tar.gz
+	rm -f ctrull-hw3.tar
+	tar -cf ctrull-hw3.tar *
+	gzip -f ctrull-hw3.tar
 
 clean:
 		rm -f ${PROGS} ${CLEANFILES}
@@ -55,7 +55,7 @@ TCPEchoClient.o: /usr/include/linux/stddef.h /usr/include/bits/types.h
 TCPEchoClient.o: /usr/include/bits/typesizes.h /usr/include/libio.h
 TCPEchoClient.o: /usr/include/_G_config.h /usr/include/wchar.h
 TCPEchoClient.o: /usr/include/bits/wchar.h /usr/include/gconv.h
-TCPEchoClient.o: /usr/lib/gcc/i386-redhat-linux/4.1.1/include/stdarg.h
+#TCPEchoClient.o: /usr/lib/gcc/i386-redhat-linux/4.1.1/include/stdarg.h
 TCPEchoClient.o: /usr/include/bits/stdio_lim.h
 TCPEchoClient.o: /usr/include/bits/sys_errlist.h /usr/include/sys/socket.h
 TCPEchoClient.o: /usr/include/sys/uio.h /usr/include/sys/types.h
@@ -83,7 +83,7 @@ TCPEchoServer.o: /usr/include/linux/stddef.h /usr/include/bits/types.h
 TCPEchoServer.o: /usr/include/bits/typesizes.h /usr/include/libio.h
 TCPEchoServer.o: /usr/include/_G_config.h /usr/include/wchar.h
 TCPEchoServer.o: /usr/include/bits/wchar.h /usr/include/gconv.h
-TCPEchoServer.o: /usr/lib/gcc/i386-redhat-linux/4.1.1/include/stdarg.h
+#TCPEchoServer.o: /usr/lib/gcc/i386-redhat-linux/4.1.1/include/stdarg.h
 TCPEchoServer.o: /usr/include/bits/stdio_lim.h
 TCPEchoServer.o: /usr/include/bits/sys_errlist.h /usr/include/sys/socket.h
 TCPEchoServer.o: /usr/include/sys/uio.h /usr/include/sys/types.h
@@ -110,7 +110,7 @@ DieWithError.o: /usr/include/linux/stddef.h /usr/include/bits/types.h
 DieWithError.o: /usr/include/bits/typesizes.h /usr/include/libio.h
 DieWithError.o: /usr/include/_G_config.h /usr/include/wchar.h
 DieWithError.o: /usr/include/bits/wchar.h /usr/include/gconv.h
-DieWithError.o: /usr/lib/gcc/i386-redhat-linux/4.1.1/include/stdarg.h
+#DieWithError.o: /usr/lib/gcc/i386-redhat-linux/4.1.1/include/stdarg.h
 DieWithError.o: /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h
 DieWithError.o: /usr/include/stdlib.h /usr/include/sys/types.h
 DieWithError.o: /usr/include/linux/time.h /usr/include/linux/types.h
@@ -128,7 +128,7 @@ HandleTCPClient.o: /usr/include/linux/stddef.h /usr/include/bits/types.h
 HandleTCPClient.o: /usr/include/bits/typesizes.h /usr/include/libio.h
 HandleTCPClient.o: /usr/include/_G_config.h /usr/include/wchar.h
 HandleTCPClient.o: /usr/include/bits/wchar.h /usr/include/gconv.h
-HandleTCPClient.o: /usr/lib/gcc/i386-redhat-linux/4.1.1/include/stdarg.h
+#HandleTCPClient.o: /usr/lib/gcc/i386-redhat-linux/4.1.1/include/stdarg.h
 HandleTCPClient.o: /usr/include/bits/stdio_lim.h
 HandleTCPClient.o: /usr/include/bits/sys_errlist.h /usr/include/sys/socket.h
 HandleTCPClient.o: /usr/include/sys/uio.h /usr/include/sys/types.h
