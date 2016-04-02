@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
    if(argc == 2)
    {
       echoServPort = 8080;
-      directory = argv[1];
+//      directory = argv[1];
    }
    // Only port given, with flag
    else if(argc == 3)
@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
    else if(argc == 4)
    {
       echoServPort = atoi(argv[2]);
-      directory = argv[3];
+//      directory = argv[3];
    }
 
    /* Create socket for incoming connections */

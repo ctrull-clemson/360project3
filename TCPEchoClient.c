@@ -20,16 +20,16 @@ int main(int argc, char *argv[])
    char *fileName;                  // Name of file the user wants to save results to 
    char *url;                       // URL passed in by parameters 
    char host[64];                   // Host determined from URL passed in by parameters 
-   char *path;                      // Path determined from URL passed in by parameters 
+   char path[64];                      // Path determined from URL passed in by parameters 
    char echoBuffer[RCVBUFSIZE];     // Buffer for echo string 
    unsigned int echoStringLen;      // Length of string to echo 
    int bytesRcvd, totalBytesRcvd;   // Bytes read in single recv() 
    int hostStart = 0, hostEnd = 1, pathLength = 0;
    int i;
    
-   if (((argc % 2) != 0) || (argc <= 6 ))    // Test for correct number of arguments 
+   if (((argc % 2) != 0) || !(argc <= 6 ))    // Test for correct number of arguments 
    {
-      fprintf(stderr, "Incorrect number of arguments passed in\n");
+      fprintf(stderr, "Incorrect number of arguments passed in. Received %d\n", argc);
       exit(1);
    }
    
@@ -82,10 +82,17 @@ int main(int argc, char *argv[])
    
    // Move host string into its own variable
    memcpy(host, &url[hostStart], (hostEnd - hostStart));
-   host[(hostEnd - hostStart + 1)] = '\0';
+   host[(hostEnd - hostStart)] = '\0';
    
-   printf("%s\n", host);
+   // Verify host is correct in terminal
+   printf("Host: %s\n", host);
    
+   // Move path string into its own variable
+   memcpy(path, &url[hostEnd], (strlen(url) - (hostEnd + hostStart)));
+   path[(strlen(url) - hostEnd)] = '\0';
+   
+   // Verify host is correct in terminal
+   printf("Path: %s\n", path);
    
    return 0;
    
