@@ -54,11 +54,10 @@ int main(int argc, char *argv[])
       directory[dirLen + 1] = '\0';
    }
    
-   
+   /* 
    printf("directory: %s\n", directory);
    printf("port: %d\n", echoServPort);
-   
-   ///////// TCP Code Starts here /////////
+   */
    
    /* Create socket for incoming connections */
    if ((servSock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
