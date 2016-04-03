@@ -43,7 +43,7 @@ clean:
 		rm -f ${PROGS} ${CLEANFILES}
 
 depend:
-		makedepend TCPEchoClient.c TCPEchoServer.c $(INCLUDES) $(CFLAGS) $(HEADERS) $(SOURCES) $(COMMONSOURCES) $(CSOURCES)
+		makedepend -g TCPEchoClient.c TCPEchoServer.c $(INCLUDES) $(CFLAGS) $(HEADERS) $(SOURCES) $(COMMONSOURCES) $(CSOURCES)
 #		mkdep $(CFLAGS) $(HEADERS) $(SOURCES) $(COMMONSOURCES) $(CSOURCES)
 
 # DO NOT DELETE

@@ -8,18 +8,19 @@
 #define MAXPENDING 5    /* Maximum outstanding connection requests */
 
 void DieWithError(char *errorMessage);  /* Error handling function */
-void HandleTCPClient(int clntSocket);   /* TCP client handling function */
+void HandleTCPClient(int clntSocket, char directory[]);   /* TCP client handling function */
 
 int main(int argc, char *argv[])
 {
    int servSock;                       /* Socket descriptor for server */
    int clntSock;                       /* Socket descriptor for client */
-   //int i;                              /* Loop controllers */
+   //int i;                            /* Loop controllers */
    char directory[64];                 /* Server's storage directory */
    struct sockaddr_in echoServAddr;    /* Local address */
    struct sockaddr_in echoClntAddr;    /* Client address */
-   unsigned short echoServPort; /* Server port */
+   unsigned short echoServPort;        /* Server port */
    unsigned int clntLen;               /* Length of client address data structure */
+   echoServPort = 8080;
 
    if ((argc < 1) || (argc > 4))       /* Test for correct number of arguments */
    {
@@ -31,21 +32,34 @@ int main(int argc, char *argv[])
    if(argc == 2)
    {
       echoServPort = 8080;
-//      directory = argv[1];
+      strcpy(&directory[0], argv[1]);
    }
    // Only port given, with flag
    else if(argc == 3)
    {
       echoServPort = atoi(argv[2]);
-      strcpy(directory, "./");
+      strcpy(directory, ".");
    }
    // Both port and directory given
    else if(argc == 4)
    {
       echoServPort = atoi(argv[2]);
-//      directory = argv[3];
+      strcpy(&directory[0], argv[3]);
    }
-
+      
+   int dirLen = strlen(directory);
+   if(directory[dirLen-1] != '/')
+   {
+      directory[dirLen] = '/';
+      directory[dirLen + 1] = '\0';
+   }
+   
+   
+   printf("directory: %s\n", directory);
+   printf("port: %d\n", echoServPort);
+   
+   ///////// TCP Code Starts here /////////
+   
    /* Create socket for incoming connections */
    if ((servSock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
       DieWithError("socket() failed");
@@ -66,18 +80,6 @@ int main(int argc, char *argv[])
 
    for (;;) /* Run forever */
    {
-      /*
-         To do:
-            Loop until client send message.
-               When arrives, concat directory & HTTP GET file name
-                  If directory/HTTPName exists, send HTTP OK 200 & contents
-                  Else send HTTP 404 ERROR
-            
-            Support GET and HEAD methods
-            
-            Able  to respond to 200, 400, 403, 404, and 405.
-      */
-      
       /* Set the size of the in-out parameter */
       clntLen = sizeof(echoClntAddr);
 
@@ -88,9 +90,12 @@ int main(int argc, char *argv[])
 
       /* clntSock is connected to a client! */
 
-      printf("Handling client %s\n", inet_ntoa(echoClntAddr.sin_addr));
-
-      HandleTCPClient(clntSock);
+      HandleTCPClient(clntSock, directory);
    }
    /* NOT REACHED */
 }
+
+
+
+
+

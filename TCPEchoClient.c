@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
    
    // Parse URL string to get host and path
    // If path has http:// then ignore that and continue
-   if(strncmp (url,"http://", 7) == 0)
+   if(strncmp(url,"http://", 7) == 0)
    {
       hostStart = 7;
    }
@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
    index += strlen("\r\n");
    getHeader[index] = '\0';
    
-   printf("%s", getHeader);
+   //printf("%s", getHeader);
    
    ///////////////// HERE AFTER IS OLD CODE /////////////////
 
@@ -161,15 +161,13 @@ int main(int argc, char *argv[])
    
    if(fileName != NULL)
    {
-      printf("Filename: %s\n", fileName);
       file = fopen(fileName,  "w");
-      fprintf(file, "%d", 1);
    }
    
    bytesRcvd = 1;   
    while(bytesRcvd != 0)
    {
-      bytesRcvd = recv(sock, httpResponse, RCVBUFSIZE - 1, 0);
+      bytesRcvd = recv(sock, httpResponse, (RCVBUFSIZE - 1), 0);
       //printf("%d\n", bytesRcvd);
       if(fileName != NULL)
       {
@@ -181,6 +179,8 @@ int main(int argc, char *argv[])
          fflush(stdout);      
       }
    }
+   
+   fclose(file);
    
    close(sock);
    exit(0);
