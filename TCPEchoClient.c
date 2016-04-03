@@ -1,3 +1,18 @@
+/****************************************************************************************************************
+*
+* Author name: Christian Trull
+*
+* Module:      simget source code
+*
+* File Name:   TCPEchoClient.c
+*
+* Summary:
+*  This file contains the code that creates an HTTP GET request based on the input parameters and sends the GET
+*     request. The executable will then write the response it receives to either stdout or the specified file
+*     passed in from the command line.
+*
+****************************************************************************************************************/
+
 #include <stdio.h>      // for printf() and fprintf() 
 #include <sys/socket.h> // for socket(), connect(), send(), and recv() 
 #include <arpa/inet.h>  // for sockaddr_in and inet_addr() 
