@@ -61,16 +61,71 @@ void HandleTCPClient(int clntSocket, char directory[])
             index += strlen("200 OK\r\n");  
             strcpy(&returnBuffer[index], fileDate);
             index += strlen(fileDate);
-            strcpy(&returnBuffer[index], "\r\n\r\n");
-            index += strlen("\r\n\r\n");  
-            returnBuffer[index] = '\0';
+            strcpy(&returnBuffer[index], "\r\n");
+            index += strlen("\r\n"); 
             
             // Server printout
             if(strncmp(echoBuffer, "GET", 3) == 0)
-               { serverPrintOut("GET", directory, timing, 200); }
+            { 
+               serverPrintOut("GET", directory, timing, 200); 
+               
+               strcpy(&returnBuffer[index], "Content -Type:\t");
+               index += strlen("Content -Type:\t"); 
+            
+               // Content length stuff
+               char *fileType = strstr(path, ".");
+               printf("File type is: %s\n", fileType);
+               if(strstr(fileType, ".css") != NULL)
+               {               
+                  // text/css
+                  strcpy(&returnBuffer[index], "text/css");
+                  index += strlen("text/css");
+               }
+               else if((strstr(fileType, ".html") != NULL) || (strstr(fileType, ".htm") != NULL))
+               {
+                  // text/html
+                  strcpy(&returnBuffer[index], "text/html");
+                  index += strlen("text/html");
+               }
+               else if(strstr(fileType, ".js") != NULL)
+               {
+                  // application/javascript
+                  strcpy(&returnBuffer[index], "application/javascript");
+                  index += strlen("application/javascript");
+               }
+               else if(strstr(fileType, ".txt") != NULL)
+               {
+                  // text/plain
+                  strcpy(&returnBuffer[index], "text/plain");
+                  index += strlen("text/plain");
+               }
+               else if(strstr(fileType, ".jpg") != NULL)
+               {
+                  // image/jpeg
+                  strcpy(&returnBuffer[index], "image/jpeg");
+                  index += strlen("image/jpeg");
+               }
+               else if(strstr(fileType, ".pdf") != NULL)
+               {
+                  // application/pdf
+                  strcpy(&returnBuffer[index], "application/pdf");
+                  index += strlen("application/pdf");
+               }
+               else
+               {
+                  // application/octet-stream
+                  strcpy(&returnBuffer[index], "application/octet-stream");
+                  index += strlen("application/octet-stream");
+               }
+               
+               strcpy(&returnBuffer[index], "\r\n\r\n");
+               index += strlen("\r\n\r\n");  
+               returnBuffer[index] = '\0';
+            }
             else
                { serverPrintOut("HEAD", directory, timing, 200); }
          }
+         
          // No read permission
          else
          {
@@ -81,9 +136,9 @@ void HandleTCPClient(int clntSocket, char directory[])
             
             // Server printout
             if(strncmp(echoBuffer, "GET", 3) == 0)
-               { serverPrintOut("GET", directory, timing, 403); }
+               { serverPrintOut("GET ", directory, timing, 403); }
             else
-               { serverPrintOut("HEAD", directory, timing, 403); }
+               { serverPrintOut("HEAD ", directory, timing, 403); }
          }         
       }
       
@@ -93,7 +148,13 @@ void HandleTCPClient(int clntSocket, char directory[])
          // 404 request response
          strcpy(&returnBuffer[index], "404 Not Found\r\n\r\n");
          index += strlen("404 Not Found\r\n\r\n");    
-         returnBuffer[index] = '\0';   
+         returnBuffer[index] = '\0';
+      
+         // Server printout
+         if(strncmp(echoBuffer, "GET", 3) == 0)
+            { serverPrintOut("GET ", directory, "", 404); }
+         else
+            { serverPrintOut("HEAD ", directory, "", 404); }
         
       }
       
@@ -122,7 +183,7 @@ void HandleTCPClient(int clntSocket, char directory[])
       returnBuffer[index] = '\0';
    }
    
-   //printf("Sending response:\n%s", returnBuffer);
+   printf("Sending response:\n%s", returnBuffer);
    
    // Send the string to the client 
    if (send(clntSocket, returnBuffer, strlen(returnBuffer), 0) <= 0)
@@ -138,7 +199,6 @@ void serverPrintOut(char queryType[], char path[], char timing[], int responseTy
    
    return;
 }
-
 
 
 
