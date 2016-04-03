@@ -82,7 +82,6 @@ int main(int argc, char *argv[])
          i = strlen(url);
       }      
    }
-     
    
    // Move host and path string into their own variables
    if(hostEnd != strlen(url))
@@ -131,10 +130,6 @@ int main(int argc, char *argv[])
    index += strlen("\r\n");
    getHeader[index] = '\0';
    
-   //printf("%s", getHeader);
-   
-   ///////////////// HERE AFTER IS OLD CODE /////////////////
-
    // Create a reliable, stream socket using TCP 
    if ((sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
       DieWithError("socket() failed");
@@ -153,22 +148,26 @@ int main(int argc, char *argv[])
    if (connect(sock, (struct sockaddr *) &echoServAddr, sizeof(echoServAddr)) < 0)
       DieWithError("connect() failed");
 
-   echoStringLen = strlen(getHeader);          // Determine input length 
+   echoStringLen = strlen(getHeader);                  // Determine input length 
 
    // Send the string to the server 
    if (send(sock, getHeader, echoStringLen, 0) != echoStringLen)
       DieWithError("send() sent a different number of bytes than expected");
    
+   // If a file name was passed in, open the file so it can be written to.
    if(fileName != NULL)
    {
       file = fopen(fileName,  "w");
    }
    
-   bytesRcvd = 1;   
+   bytesRcvd = 1;
+   
+   // Loop until the server stops sending data
    while(bytesRcvd != 0)
    {
       bytesRcvd = recv(sock, httpResponse, (RCVBUFSIZE - 1), 0);
-      //printf("%d\n", bytesRcvd);
+      
+      // Print to whichever output based on input parameters.
       if(fileName != NULL)
       {
          fprintf(file, "%s", httpResponse);
