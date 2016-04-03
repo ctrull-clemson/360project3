@@ -6,7 +6,7 @@
 #include <string.h>     // for memset() 
 #include <unistd.h>     // for close() 
 
-#define RCVBUFSIZE 1024   // Size of receive buffer 
+#define RCVBUFSIZE 1024  // Size of receive buffer 
 
 void DieWithError(char *errorMessage);  // Error handling function 
 
@@ -16,16 +16,20 @@ int main(int argc, char *argv[])
    struct sockaddr_in echoServAddr; // Echo server address 
    struct hostent *thehost;         // Hostent from gethostbyname() 
    unsigned short echoServPort;     // Echo server port 
-   char *fileName;                  // Name of file the user wants to save results to 
+   char *fileName = NULL;           // Name of file the user wants to save results to 
    char *url;                       // URL passed in by parameters 
    char host[64];                   // Host determined from URL passed in by parameters 
-   char path[64];                   // Path determined from URL passed in by parameters 
+   char path[64] = "/";             // Path determined from URL passed in by parameters 
    char getHeader[RCVBUFSIZE];      // Buffer for echo string 
+   char httpResponse[RCVBUFSIZE];   // Buffer for echo string 
    unsigned int echoStringLen;      // Length of string to echo 
-   int bytesRcvd, totalBytesRcvd;   // Bytes read in single recv() 
+   int bytesRcvd;                   // Bytes read in single recv() 
    int hostStart = 0, hostEnd = 1;
-   int i;
-    
+   FILE* file = NULL;
+   int i; 
+   
+   echoServPort = 8080;
+      
    if (((argc % 2) != 0) || !(argc <= 6 ))    // Test for correct number of arguments 
    {
       fprintf(stderr, "Incorrect number of arguments passed in. Received %d\n", argc);
@@ -78,13 +82,17 @@ int main(int argc, char *argv[])
          i = strlen(url);
       }      
    }
+     
    
    // Move host and path string into their own variables
-   memcpy(path, &url[hostEnd], (strlen(url) - (hostEnd + hostStart)));
-   path[(strlen(url) - hostEnd)] = '\0';
+   if(hostEnd != strlen(url))
+   {
+      memcpy(path, &url[hostEnd], (strlen(url) - hostEnd));
+      path[(strlen(url) - hostEnd)] = '\0';
+   }
    memcpy(host, &url[hostStart], (hostEnd - hostStart));
    host[(hostEnd - hostStart)] = '\0';
-    
+   
    // Create get header
    int index = 0;
    
@@ -96,11 +104,11 @@ int main(int argc, char *argv[])
    strcpy(&getHeader[index], " ");
    index += (strlen(" "));
    strcpy(&getHeader[index], "HTTP/1.1\r\n");
-   index += strlen("HTTP/1.1\n\n");
+   index += strlen("HTTP/1.1\r\n");
    
    // Second row
-   strcpy(&getHeader[index], "User-Agen: Wget/1.14(darwin 12.2.1)\r\n");
-   index += strlen("User-Agen: Wget/1.14(darwin 12.2.1)\r\n");
+   strcpy(&getHeader[index], "User-Agent: Wget/1.14 (darwin 12.2.1) \r\n");
+   index += strlen("User-Agent: Wget/1.14 (darwin 12.2.1) \r\n");
    
    // Third row
    strcpy(&getHeader[index], "Accept: */*\r\n");
@@ -121,12 +129,10 @@ int main(int argc, char *argv[])
    // Sixth row
    strcpy(&getHeader[index], "\r\n");
    index += strlen("\r\n");
-   
+   getHeader[index] = '\0';
    
    printf("%s", getHeader);
    
-   
-    
    ///////////////// HERE AFTER IS OLD CODE /////////////////
 
    // Create a reliable, stream socket using TCP 
@@ -143,8 +149,6 @@ int main(int argc, char *argv[])
    thehost = gethostbyname(host);
    echoServAddr.sin_addr.s_addr = *((unsigned long *) thehost->h_addr_list[0]);
 
-   printf("%d\n", echoServPort);
-   
    // Establish the connection to the echo server 
    if (connect(sock, (struct sockaddr *) &echoServAddr, sizeof(echoServAddr)) < 0)
       DieWithError("connect() failed");
@@ -154,27 +158,36 @@ int main(int argc, char *argv[])
    // Send the string to the server 
    if (send(sock, getHeader, echoStringLen, 0) != echoStringLen)
       DieWithError("send() sent a different number of bytes than expected");
-      
-   return 0;
    
-   
-   // Receive the same string back from the server
-   totalBytesRcvd = 0;
-   printf("Received: ");                // Setup to print the echoed string 
-   while (totalBytesRcvd < echoStringLen)
+   if(fileName != NULL)
    {
-      // Receive up to the buffer size (minus 1 to leave space for
-      // a null terminator) bytes from the sender 
-      if ((bytesRcvd = recv(sock, getHeader, RCVBUFSIZE - 1, 0)) <= 0)
-         DieWithError("recv() failed or connection closed prematurely");
-         
-      totalBytesRcvd += bytesRcvd;   // Keep tally of total bytes 
-      getHeader[bytesRcvd] = '\0';  // Terminate the string! 
-      printf(getHeader);            // Print the echo buffer 
+      printf("Filename: %s\n", fileName);
+      file = fopen(fileName,  "w");
+      fprintf(file, "%d", 1);
    }
-
-   printf("\n");    // Print a final linefeed 
-
+   
+   bytesRcvd = 1;   
+   while(bytesRcvd != 0)
+   {
+      bytesRcvd = recv(sock, httpResponse, RCVBUFSIZE - 1, 0);
+      //printf("%d\n", bytesRcvd);
+      if(fileName != NULL)
+      {
+         fprintf(file, "%s", httpResponse);
+      }
+      else
+      {
+         printf("%s", httpResponse);
+         fflush(stdout);      
+      }
+   }
+   
    close(sock);
    exit(0);
 }
+
+
+
+
+
+

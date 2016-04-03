@@ -34,4 +34,7 @@
 simget
 simhttp
 
+*.txt
+*.html
+
 *~
