@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 {
    int servSock;                       /* Socket descriptor for server */
    int clntSock;                       /* Socket descriptor for client */
-   int i;                              /* Loop controllers */
+   //int i;                              /* Loop controllers */
    char directory[64];                 /* Server's storage directory */
    struct sockaddr_in echoServAddr;    /* Local address */
    struct sockaddr_in echoClntAddr;    /* Client address */
