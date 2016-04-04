@@ -34,7 +34,34 @@ void HandleTCPClient(int clntSocket, char directory[])
    {
       // Get file path
       char *slash = strstr(echoBuffer, "/") + 1;
-      char *space = strstr(slash, " ");      
+      
+      if(slash == NULL)
+      {
+         strcpy(&returnBuffer[index], "400 Bad Request\r\n\r\n");
+         index += strlen("400 Bad Request\r\n\r\n");   
+         returnBuffer[index] = '\0';
+         
+         if (send(clntSocket, returnBuffer, strlen(returnBuffer), 0) <= 0)
+            DieWithError("send() failed to send");
+         
+         close(clntSocket);    /* Close client socket */
+         exit(0);
+      }
+      char *space = strstr(slash, " "); 
+      
+      if(space == NULL)
+      {
+         strcpy(&returnBuffer[index], "400 Bad Request\r\n\r\n");
+         index += strlen("400 Bad Request\r\n\r\n");   
+         returnBuffer[index] = '\0';
+         
+         if (send(clntSocket, returnBuffer, strlen(returnBuffer), 0) <= 0)
+            DieWithError("send() failed to send");
+         
+         close(clntSocket);    /* Close client socket */
+         exit(0);
+      }
+      
       memcpy(path, slash, (space-slash));
       path[(space-slash) + 1] = '\0';
       
@@ -74,7 +101,6 @@ void HandleTCPClient(int clntSocket, char directory[])
             
                // Content length stuff
                char *fileType = strstr(path, ".");
-               printf("File type is: %s\n", fileType);
                if(strstr(fileType, ".css") != NULL)
                {               
                   // text/css
@@ -118,12 +144,25 @@ void HandleTCPClient(int clntSocket, char directory[])
                   index += strlen("application/octet-stream");
                }
                
-               strcpy(&returnBuffer[index], "\r\n\r\n");
-               index += strlen("\r\n\r\n");  
-               returnBuffer[index] = '\0';
+               strcpy(&returnBuffer[index], "application/octet-stream");
+               index += strlen("application/octet-stream");
+               
+               strcpy(&returnBuffer[index], "\r\n");
+               index += strlen("\r\n");
             }
             else
                { serverPrintOut("HEAD", directory, timing, 200); }
+               
+            
+            strcpy(&returnBuffer[index], "Server: simhttpServer/1.1\r\n");
+            index += strlen("Server: simhttpServer/1.1\r\n");  
+            
+            strcpy(&returnBuffer[index], "Server: simhttpServer/1.1\r\n");
+            index += strlen("Server: simhttpServer/1.1\r\n");  
+            
+            strcpy(&returnBuffer[index], "\r\n");
+            index += strlen("\r\n");
+            returnBuffer[index] = '\0';
          }
          
          // No read permission
@@ -157,22 +196,7 @@ void HandleTCPClient(int clntSocket, char directory[])
             { serverPrintOut("HEAD ", directory, "", 404); }
         
       }
-      
-      
-      // Do server print out here
-      
-      
-      
    }   
-   
-   
-   
-   
-   
-   
-   
-   
-   
    
    // Not supported request
    else
@@ -183,7 +207,7 @@ void HandleTCPClient(int clntSocket, char directory[])
       returnBuffer[index] = '\0';
    }
    
-   printf("Sending response:\n%s", returnBuffer);
+   //printf("Sending response:\n%s", returnBuffer);
    
    // Send the string to the client 
    if (send(clntSocket, returnBuffer, strlen(returnBuffer), 0) <= 0)
@@ -199,6 +223,5 @@ void serverPrintOut(char queryType[], char path[], char timing[], int responseTy
    
    return;
 }
-
 
 
