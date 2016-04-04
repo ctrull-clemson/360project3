@@ -12,10 +12,25 @@ Known Problems:
       passed in, the program will segfault after the gethostbyname() call.
    
    TCPEchoServer.c:
-      
+      The Server file is just a basic TCP server code which opens up on the specified
+      port and listens for clients to connect.
    
    HandleTCPClient.c:
-      a
+      This file deals with reading in the requests and returning the information based
+      on the input. Due to trouble with segfaults this file does not add the contents 
+      of the files to the GET responses. If it worked correctly, a GET request with 
+      a found and readable file would have a section for the data at the end of the
+      file, as well as a line in the header for the Content-Length, which would be the
+      exact length of the data read in from the file. 
+      
+      This code also is segfaulting on the provided test for the 400 error check. I
+      have been unable to determine the cause of the error, but this means my code does
+      not exhaustively check to determine if the request is a valid HTTP request format.
+      
+      On the provided test I am also losing points for the 403 error check on the 
+      sandbox portion test. I have not extensively tested on my own, but I believe
+      that I don't fully understand what all the 403 message emcompasses and am missing
+      part of its functionality.
    
 Design:
    TCPEchoClient.c:

@@ -1,3 +1,24 @@
+/****************************************************************************************************************
+*
+* Author name: Christian Trull
+*
+* Module:      HTTP request interpretation source code
+*
+* File Name:   HandleTCPClient.c
+*
+* Summary:
+*  This file contains the code that listens to client requests and then interprets and responds to them, following
+*     the HTTP 1.1 specifications. The code first checks to see if the request is  GET or HEAD request, else 
+*     sends either a 400 or 405 message. When a GET or HEAD request is sent, the code pulls out the file that
+*     is requested, check to see if the file 1) exists, and 2) is readable. If anything goes wrong here, an
+*     HTTP message is sent back with the proper code. If the file does exist and is readable, then the code 
+*     adds the necessary information to the Host Header. 
+*
+*     Due to problems, this code does not add the data section to GET requests, segfaults on some misformed HTTP
+*     requests, and sometimes mistakes 405 and 400 errors. 
+*
+****************************************************************************************************************/
+
 #include <stdio.h>      /* for printf() and fprintf() */
 #include <sys/socket.h> /* for recv() and send() */
 #include <string.h>
@@ -33,8 +54,7 @@ void HandleTCPClient(int clntSocket, char directory[])
    if((strncmp(echoBuffer, "GET", 3) == 0) || (strncmp(echoBuffer, "HEAD", 4) == 0))
    {
       // Get file path
-      char *slash = strstr(echoBuffer, "/") + 1;
-      
+      char *slash = strstr(echoBuffer, "/") + 1;      
       if(slash == NULL)
       {
          strcpy(&returnBuffer[index], "400 Bad Request\r\n\r\n");
@@ -45,10 +65,9 @@ void HandleTCPClient(int clntSocket, char directory[])
             DieWithError("send() failed to send");
          
          close(clntSocket);    /* Close client socket */
-         exit(0);
+         return;
       }
-      char *space = strstr(slash, " "); 
-      
+      char *space = strstr(slash, " ");       
       if(space == NULL)
       {
          strcpy(&returnBuffer[index], "400 Bad Request\r\n\r\n");
@@ -59,20 +78,24 @@ void HandleTCPClient(int clntSocket, char directory[])
             DieWithError("send() failed to send");
          
          close(clntSocket);    /* Close client socket */
-         exit(0);
+         return;
       }
       
+      // Determine the relative path for the file that was requested by the client
       memcpy(path, slash, (space-slash));
       path[(space-slash) + 1] = '\0';
       
+      // If the client did not explicitly state the file, we default to index.html
       if(strcmp(path, "") == 0)
          { strcpy(path, "index.html"); }      
       strcat(directory, path);    
       
-      // Determine if file exists at path
+      // Determine if file exists at the specified path
       if(access(directory, F_OK) == 0)
       {
          // File exists
+         
+         // Get information about the file. Last Modified date and time
          struct stat attrib;
          stat(directory, &attrib);
          char fileDate[100];
@@ -83,7 +106,7 @@ void HandleTCPClient(int clntSocket, char directory[])
          if(access(directory, W_OK) == 0)
          {
             // File has read permission
-            // Send 200 message
+            // Create the header information for a 200 response
             strcpy(&returnBuffer[index], "200 OK\r\n");
             index += strlen("200 OK\r\n");  
             strcpy(&returnBuffer[index], fileDate);
@@ -91,7 +114,7 @@ void HandleTCPClient(int clntSocket, char directory[])
             strcpy(&returnBuffer[index], "\r\n");
             index += strlen("\r\n"); 
             
-            // Server printout
+            // For GET requests, print out the proper message to server, and determine content type
             if(strncmp(echoBuffer, "GET", 3) == 0)
             { 
                serverPrintOut("GET", directory, timing, 200); 
@@ -99,47 +122,40 @@ void HandleTCPClient(int clntSocket, char directory[])
                strcpy(&returnBuffer[index], "Content -Type:\t");
                index += strlen("Content -Type:\t"); 
             
-               // Content length stuff
+               // Determine content type
                char *fileType = strstr(path, ".");
                if(strstr(fileType, ".css") != NULL)
                {               
-                  // text/css
                   strcpy(&returnBuffer[index], "text/css");
                   index += strlen("text/css");
                }
                else if((strstr(fileType, ".html") != NULL) || (strstr(fileType, ".htm") != NULL))
                {
-                  // text/html
                   strcpy(&returnBuffer[index], "text/html");
                   index += strlen("text/html");
                }
                else if(strstr(fileType, ".js") != NULL)
                {
-                  // application/javascript
                   strcpy(&returnBuffer[index], "application/javascript");
                   index += strlen("application/javascript");
                }
                else if(strstr(fileType, ".txt") != NULL)
                {
-                  // text/plain
                   strcpy(&returnBuffer[index], "text/plain");
                   index += strlen("text/plain");
                }
                else if(strstr(fileType, ".jpg") != NULL)
                {
-                  // image/jpeg
                   strcpy(&returnBuffer[index], "image/jpeg");
                   index += strlen("image/jpeg");
                }
                else if(strstr(fileType, ".pdf") != NULL)
                {
-                  // application/pdf
                   strcpy(&returnBuffer[index], "application/pdf");
                   index += strlen("application/pdf");
                }
                else
                {
-                  // application/octet-stream
                   strcpy(&returnBuffer[index], "application/octet-stream");
                   index += strlen("application/octet-stream");
                }
@@ -150,10 +166,12 @@ void HandleTCPClient(int clntSocket, char directory[])
                strcpy(&returnBuffer[index], "\r\n");
                index += strlen("\r\n");
             }
+            
+            // Was a HEAD request, so just print out to stdout
             else
                { serverPrintOut("HEAD", directory, timing, 200); }
                
-            
+            // Add more information to header for the response.            
             strcpy(&returnBuffer[index], "Server: simhttpServer/1.1\r\n");
             index += strlen("Server: simhttpServer/1.1\r\n");  
             
@@ -214,7 +232,6 @@ void HandleTCPClient(int clntSocket, char directory[])
       DieWithError("send() failed to send");
    
    close(clntSocket);    /* Close client socket */
-   exit(0);
 }
 
 void serverPrintOut(char queryType[], char path[], char timing[], int responseType)

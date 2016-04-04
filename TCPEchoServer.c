@@ -1,3 +1,19 @@
+/****************************************************************************************************************
+*
+* Author name: Christian Trull
+*
+* Module:      simhttp source code
+*
+* File Name:   TCPEchoServer.c
+*
+* Summary:
+*  This file contains the code that functions as a server that HTTP GET requests can be sent to, and will then
+*     respond with a correct HTTP response. This code manages the creation of the socket, and listening for 
+*     connections. All interpretation and writing of inputs and resposnes is located in the HandleTCPClient.c
+*     file. This code is a simple TCP Server code, similar to the one provided in our textbook.
+*
+****************************************************************************************************************/
+
 #include <stdio.h>      /* for printf() and fprintf() */
 #include <sys/socket.h> /* for socket(), bind(), and connect() */
 #include <arpa/inet.h>  /* for sockaddr_in and inet_ntoa() */
@@ -54,11 +70,6 @@ int main(int argc, char *argv[])
       directory[dirLen + 1] = '\0';
    }
    
-   /* 
-   printf("directory: %s\n", directory);
-   printf("port: %d\n", echoServPort);
-   */
-   
    /* Create socket for incoming connections */
    if ((servSock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
       DieWithError("socket() failed");
@@ -86,8 +97,6 @@ int main(int argc, char *argv[])
       if ((clntSock = accept(servSock, (struct sockaddr *) &echoClntAddr, 
                       &clntLen)) < 0)
       DieWithError("accept() failed");
-
-      /* clntSock is connected to a client! */
 
       HandleTCPClient(clntSock, directory);
    }
