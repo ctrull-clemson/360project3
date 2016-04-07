@@ -49,12 +49,36 @@ void HandleTCPClient(int clntSocket, char directory[])
    if((recvMsgSize = recv(clntSocket, echoBuffer, RCVBUFSIZE, 0)) < 0)
       DieWithError("recv() failed");
    
+   // Not supported, valid headers. 405 message response
+   if((strncmp(echoBuffer, "OPTIONS", 7) == 0) || (strncmp(echoBuffer, "POST", 4) == 0)
+         || (strncmp(echoBuffer, "PUT", 3) == 0) || (strncmp(echoBuffer, "DELETE", 6) == 0)
+         || (strncmp(echoBuffer, "TRACE", 5) == 0) || (strncmp(echoBuffer, "CONNECT", 7) == 0))
+   {
+      // 405 request response
+      strcpy(&returnBuffer[index], "405 Method Not Allowed\r\n\r\n");
+      index += strlen("405 Method Not Allowed\r\n\r\n");   
+      returnBuffer[index] = '\0';      
+   }
    
    // Determine if GET or HEAD request
-   if((strncmp(echoBuffer, "GET", 3) == 0) || (strncmp(echoBuffer, "HEAD", 4) == 0))
+   else if((strncmp(echoBuffer, "GET", 3) == 0) || (strncmp(echoBuffer, "HEAD", 4) == 0))
    {
+      char *httpCheck = strstr(echoBuffer, "HTTP/1.1");
+      if(httpCheck == NULL)
+      {
+         strcpy(&returnBuffer[index], "400 Bad Request\r\n\r\n");
+         index += strlen("400 Bad Request\r\n\r\n");   
+         returnBuffer[index] = '\0';
+         
+         if (send(clntSocket, returnBuffer, strlen(returnBuffer), 0) <= 0)
+            DieWithError("send() failed to send");
+         
+         close(clntSocket);    /* Close client socket */
+         return;      
+      }
+      
       // Get file path
-      char *slash = strstr(echoBuffer, "/") + 1;      
+      char *slash = strstr(echoBuffer, "/");      
       if(slash == NULL)
       {
          strcpy(&returnBuffer[index], "400 Bad Request\r\n\r\n");
@@ -67,6 +91,8 @@ void HandleTCPClient(int clntSocket, char directory[])
          close(clntSocket);    /* Close client socket */
          return;
       }
+      slash++;
+      
       char *space = strstr(slash, " ");       
       if(space == NULL)
       {
@@ -81,6 +107,21 @@ void HandleTCPClient(int clntSocket, char directory[])
          return;
       }
       
+      char *changeDirectory = strstr(echoBuffer, "../");
+      if(changeDirectory != NULL)
+      {
+            // Send 403 message
+            strcpy(&returnBuffer[index], "403 Forbidden\r\n\r\n");
+            index += strlen("403 Forbidden\r\n\r\n");  
+            returnBuffer[index] = '\0';
+            
+            // Server printout
+            if(strncmp(echoBuffer, "GET", 3) == 0)
+               { serverPrintOut("GET ", directory, timing, 403); }
+            else
+               { serverPrintOut("HEAD ", directory, timing, 403); }         
+      }
+      
       // Determine the relative path for the file that was requested by the client
       memcpy(path, slash, (space-slash));
       path[(space-slash) + 1] = '\0';
@@ -93,8 +134,7 @@ void HandleTCPClient(int clntSocket, char directory[])
       // Determine if file exists at the specified path
       if(access(directory, F_OK) == 0)
       {
-         // File exists
-         
+         // File exists         
          // Get information about the file. Last Modified date and time
          struct stat attrib;
          stat(directory, &attrib);
