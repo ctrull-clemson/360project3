@@ -28,7 +28,7 @@
 #include <sys/types.h>
 #include <time.h>
 
-#define RCVBUFSIZE 4096   /* Size of receive buffer */
+#define RCVBUFSIZE 500000   /* Size of receive buffer */
 void serverPrintOut(char queryType[], char path[], char timing[], int responseType);
 void DieWithError(char *errorMessage);  /* Error handling function */
 
@@ -215,8 +215,36 @@ void HandleTCPClient(int clntSocket, char directory[])
             strcpy(&returnBuffer[index], "Server: simhttpServer/1.1\r\n");
             index += strlen("Server: simhttpServer/1.1\r\n");  
             
-            strcpy(&returnBuffer[index], "Server: simhttpServer/1.1\r\n");
-            index += strlen("Server: simhttpServer/1.1\r\n");  
+            int character;
+            FILE *targetFile = fopen(directory, "r");
+            
+            fseek(targetFile, 0, SEEK_END);  // seek to end of file
+            int contentLength = ftell(targetFile);        // get current file pointer
+            fseek(targetFile, 0, SEEK_SET);  // seek back to beginning of file
+            char length[15];
+            sprintf(length, "%d", contentLength);
+            
+            // Add content length to resposne
+            strcpy(&returnBuffer[index], "Content -Length:\t");
+            index += strlen("Content -Length:\t");            
+            strcpy(&returnBuffer[index], length);
+            index += strlen(length);
+            strcpy(&returnBuffer[index], "\r\n");
+            index += strlen("\r\n");
+            strcpy(&returnBuffer[index], "\r\n");
+            index += strlen("\r\n");
+            
+            int dex = 0;
+            char * fileInput = malloc(contentLength * 2);
+            while ((character = getc(targetFile)) != EOF)
+            {
+               fileInput[dex++] = character;
+            }
+            
+            strcpy(&returnBuffer[index], fileInput);
+            index += strlen(fileInput);
+            strcpy(&returnBuffer[index], "\r\n");
+            index += strlen("\r\n");
             
             strcpy(&returnBuffer[index], "\r\n");
             index += strlen("\r\n");
